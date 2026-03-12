@@ -44,7 +44,8 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background max-w-md mx-auto">
+    <div className="min-h-screen bg-background max-w-md mx-auto pride-bg relative z-0">
+      <div className="relative z-10">
       <AnimatePresence mode="wait">
         {screen === "intro" && (
           <IntroScreen key="intro" onStart={() => setScreen("mirror")} onBack={handleBack} />
