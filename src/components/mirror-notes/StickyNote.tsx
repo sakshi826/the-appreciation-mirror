@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 
-const NOTE_COLORS = ["note-yellow", "note-mint", "note-blue"] as const;
+const NOTE_COLORS = ["note-red", "note-orange", "note-yellow", "note-green", "note-blue", "note-purple"] as const;
 
 interface StickyNoteProps {
   index: number;
