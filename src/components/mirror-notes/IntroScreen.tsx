@@ -7,14 +7,22 @@ interface IntroScreenProps {
   onBack?: () => void;
 }
 
-const IntroScreen = ({ onStart }: IntroScreenProps) => {
+const IntroScreen = ({ onStart, onBack }: IntroScreenProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="flex flex-col items-center justify-center min-h-screen px-6 py-10 text-center"
+      className="relative flex flex-col items-center justify-center min-h-screen px-6 py-10 text-center"
     >
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="absolute top-4 left-4 p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+      )}
       <motion.h1
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
