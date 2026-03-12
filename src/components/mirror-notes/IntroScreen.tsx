@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 interface IntroScreenProps {
   onStart: () => void;
+  onBack?: () => void;
 }
 
 const IntroScreen = ({ onStart }: IntroScreenProps) => {
