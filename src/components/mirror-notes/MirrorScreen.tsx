@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import StickyNote from "./StickyNote";
 import AddNoteModal from "./AddNoteModal";
 import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 interface MirrorScreenProps {
   notes: string[];
@@ -10,18 +10,22 @@ interface MirrorScreenProps {
   onContinue: () => void;
 }
 
-const TOTAL_SLOTS = 8;
+const NOTE_COLORS = ["note-yellow", "note-mint", "note-blue"] as const;
+
+// Predefined positions (percentage-based) for notes on the mirror
+const NOTE_POSITIONS = [
+  { top: "8%", left: "10%", rotate: -5 },
+  { top: "5%", left: "55%", rotate: 4 },
+  { top: "30%", left: "5%", rotate: -3 },
+  { top: "28%", left: "58%", rotate: 6 },
+  { top: "52%", left: "8%", rotate: -4 },
+  { top: "50%", left: "52%", rotate: 3 },
+  { top: "72%", left: "15%", rotate: -6 },
+  { top: "70%", left: "50%", rotate: 5 },
+];
 
 const MirrorScreen = ({ notes, onAddNote, onContinue }: MirrorScreenProps) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [activeSlot, setActiveSlot] = useState<number>(0);
-
-  const handleSlotClick = (index: number) => {
-    if (!notes[index]) {
-      setActiveSlot(index);
-      setModalOpen(true);
-    }
-  };
 
   const handleSubmit = (text: string) => {
     onAddNote(text);
@@ -41,12 +45,12 @@ const MirrorScreen = ({ notes, onAddNote, onContinue }: MirrorScreenProps) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col items-center min-h-screen px-5 py-8"
+      className="flex flex-col items-center min-h-screen px-5 py-6"
     >
       <p className="text-sm text-muted-foreground text-center font-body mb-1">{prompt}</p>
 
       {filledCount === 0 && (
-        <div className="flex flex-wrap gap-2 justify-center mb-4 mt-2">
+        <div className="flex flex-wrap gap-2 justify-center mb-3 mt-1">
           {[
             "I keep trying even when things are hard.",
             "I care deeply about people.",
@@ -59,29 +63,58 @@ const MirrorScreen = ({ notes, onAddNote, onContinue }: MirrorScreenProps) => {
         </div>
       )}
 
-      {/* Mirror + Notes */}
-      <div className="relative w-full max-w-xs mx-auto mt-4 mb-8">
-        {/* Mirror */}
-        <div className="w-full aspect-[3/4] rounded-[2rem] bg-mirror border-2 border-border flex items-center justify-center">
-          <span className="text-xs text-muted-foreground/50 font-reflection">✨</span>
+      {/* Mirror with notes on it */}
+      <div className="relative w-full max-w-xs mx-auto mt-3 mb-6">
+        <div className="w-full aspect-[3/4] rounded-[2rem] bg-mirror border-2 border-border relative overflow-hidden">
+          {/* Sparkle when empty */}
+          {filledCount === 0 && (
+            <span className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground/50 font-reflection">✨</span>
+          )}
+
+          {/* Notes placed on the mirror */}
+          <AnimatePresence>
+            {notes.map((text, i) => {
+              const pos = NOTE_POSITIONS[i % NOTE_POSITIONS.length];
+              const color = NOTE_COLORS[i % NOTE_COLORS.length];
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.3 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className={`${color} absolute w-[38%] aspect-square rounded-lg shadow-md p-2 flex items-center justify-center`}
+                  style={{
+                    top: pos.top,
+                    left: pos.left,
+                    rotate: `${pos.rotate}deg`,
+                  }}
+                >
+                  <p className="font-reflection text-[10px] leading-tight text-foreground text-center break-words">
+                    {text}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
         </div>
       </div>
 
-      {/* Sticky Notes Grid */}
-      <div className="grid grid-cols-3 gap-3 w-full max-w-xs mx-auto mb-8">
-        {Array.from({ length: TOTAL_SLOTS }).map((_, i) => (
-          <StickyNote
-            key={i}
-            index={i}
-            text={notes[i]}
-            onClick={() => handleSlotClick(i)}
-          />
-        ))}
-      </div>
+      {/* Add Note Button */}
+      {filledCount < 8 && (
+        <Button
+          variant="mirror"
+          size="lg"
+          onClick={() => setModalOpen(true)}
+          className="px-8 mb-4"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Add Note
+        </Button>
+      )}
 
       {filledCount >= 3 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <Button variant="mirror" size="lg" onClick={onContinue} className="px-8">
+          <Button variant="outline" size="lg" onClick={onContinue} className="px-8 rounded-full">
             Continue to Reflection
           </Button>
         </motion.div>
