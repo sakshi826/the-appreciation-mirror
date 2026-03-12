@@ -39,6 +39,7 @@ const Index = () => {
   }, []);
 
   const handleBack = useCallback(() => {
+    setNotes([]);
     setScreen("intro");
   }, []);
 
