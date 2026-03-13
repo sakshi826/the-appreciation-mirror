@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import StickyNote from "./StickyNote";
+import { useTranslation } from "react-i18next";
 
 interface ReflectionScreenProps {
   notes: string[];
@@ -9,6 +10,7 @@ interface ReflectionScreenProps {
 }
 
 const ReflectionScreen = ({ notes, onContinue }: ReflectionScreenProps) => {
+  const { t } = useTranslation();
   const [reflection, setReflection] = useState("");
 
   return (
@@ -19,10 +21,10 @@ const ReflectionScreen = ({ notes, onContinue }: ReflectionScreenProps) => {
       className="flex flex-col items-center min-h-screen px-5 py-8"
     >
       <h2 className="text-2xl font-heading font-semibold text-foreground mb-3 text-center">
-        Your Mirror
+        {t("yourMirror")}
       </h2>
       <p className="text-sm text-muted-foreground text-center text-justify max-w-xs mb-6 leading-relaxed">
-        Take a moment to read these notes. They reflect parts of you that deserve appreciation.
+        {t("reflectionText")}
       </p>
 
       <div className="grid grid-cols-3 gap-3 w-full max-w-xs mx-auto mb-8">
@@ -33,18 +35,18 @@ const ReflectionScreen = ({ notes, onContinue }: ReflectionScreenProps) => {
 
       <div className="w-full max-w-xs mb-6">
         <p className="text-sm text-muted-foreground mb-2 text-justify">
-          How did it feel to acknowledge these parts of yourself?
+          {t("howDidItFeel")}
         </p>
         <textarea
           value={reflection}
           onChange={(e) => setReflection(e.target.value)}
-          placeholder="Share your thoughts… (optional)"
+          placeholder={t("shareThoughts")}
           className="w-full h-24 rounded-xl border border-input bg-background p-3 text-sm font-reflection text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
         />
       </div>
 
-      <Button variant="mirror" size="lg" onClick={onContinue} className="px-8">
-        Continue
+      <Button variant="mirror" size="lg" onClick={onContinue} className="px-8 py-6">
+        {t("continue")}
       </Button>
     </motion.div>
   );

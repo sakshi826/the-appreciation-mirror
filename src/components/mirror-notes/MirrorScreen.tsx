@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import AddNoteModal from "./AddNoteModal";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface MirrorScreenProps {
   notes: string[];
@@ -25,6 +26,7 @@ const NOTE_POSITIONS = [
 ];
 
 const MirrorScreen = ({ notes, onAddNote, onContinue }: MirrorScreenProps) => {
+  const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleSubmit = (text: string) => {
@@ -35,10 +37,10 @@ const MirrorScreen = ({ notes, onAddNote, onContinue }: MirrorScreenProps) => {
   const filledCount = notes.length;
   const prompt =
     filledCount === 0
-      ? "Write something you appreciate about yourself."
+      ? t("writeAppreciation")
       : filledCount < 3
-        ? "Your mirror is starting to fill with appreciation."
-        : "Your mirror is filling with appreciation.";
+        ? t("mirrorFilling")
+        : t("mirrorFull");
 
   return (
     <motion.div
@@ -47,16 +49,16 @@ const MirrorScreen = ({ notes, onAddNote, onContinue }: MirrorScreenProps) => {
       exit={{ opacity: 0 }}
       className="flex flex-col items-center min-h-screen px-5 py-6"
     >
-      <p className="text-sm text-muted-foreground text-center font-body mb-1">{prompt}</p>
+      <p className="text-sm text-muted-foreground text-center font-body mb-1 font-medium">{prompt}</p>
 
       {filledCount === 0 && (
         <div className="flex flex-wrap gap-2 justify-center mb-3 mt-1">
           {[
-            "I keep trying even when things are hard.",
-            "I care deeply about people.",
-            "I'm learning to accept myself.",
+            t("hint1"),
+            t("hint2"),
+            t("hint3"),
           ].map((hint, i) => (
-            <span key={i} className="text-xs bg-secondary text-secondary-foreground px-3 py-1 rounded-full italic">
+            <span key={i} className="text-[10px] bg-secondary text-secondary-foreground px-3 py-1 rounded-full italic">
               "{hint}"
             </span>
           ))}
@@ -89,7 +91,7 @@ const MirrorScreen = ({ notes, onAddNote, onContinue }: MirrorScreenProps) => {
                     rotate: `${pos.rotate}deg`,
                   }}
                 >
-                  <p className="font-reflection text-[10px] leading-tight text-foreground text-center break-words">
+                  <p className="font-reflection text-[10px] leading-tight text-foreground text-center break-words px-1">
                     {text}
                   </p>
                 </motion.div>
@@ -105,17 +107,17 @@ const MirrorScreen = ({ notes, onAddNote, onContinue }: MirrorScreenProps) => {
           variant="mirror"
           size="lg"
           onClick={() => setModalOpen(true)}
-          className="px-8 mb-4"
+          className="px-8 mb-4 py-6"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Note
+          {t("addNote")}
         </Button>
       )}
 
       {filledCount >= 3 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <Button variant="outline" size="lg" onClick={onContinue} className="px-8 rounded-full">
-            Continue to Reflection
+          <Button variant="outline" size="lg" onClick={onContinue} className="px-8 rounded-full py-6">
+            {t("continueToReflection")}
           </Button>
         </motion.div>
       )}

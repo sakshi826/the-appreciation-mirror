@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import IntroScreen from "@/components/mirror-notes/IntroScreen";
@@ -10,6 +11,7 @@ import { toast } from "sonner";
 type Screen = "intro" | "mirror" | "reflection" | "completion" | "saved";
 
 const Index = () => {
+  const { t } = useTranslation();
   const [screen, setScreen] = useState<Screen>("intro");
   const [notes, setNotes] = useState<string[]>([]);
 
@@ -21,9 +23,9 @@ const Index = () => {
     const existing = JSON.parse(localStorage.getItem("mirror-notes") || "[]");
     const merged = [...new Set([...existing, ...notes])];
     localStorage.setItem("mirror-notes", JSON.stringify(merged));
-    toast.success("Notes saved!");
+    toast.success(t("notesSaved"));
     setScreen("saved");
-  }, [notes]);
+  }, [notes, t]);
 
   const handleViewSaved = useCallback(() => {
     const saved = JSON.parse(localStorage.getItem("mirror-notes") || "[]");

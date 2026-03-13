@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface IntroScreenProps {
   onStart: () => void;
@@ -8,6 +9,7 @@ interface IntroScreenProps {
 }
 
 const IntroScreen = ({ onStart, onBack }: IntroScreenProps) => {
+  const { t } = useTranslation();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -29,12 +31,11 @@ const IntroScreen = ({ onStart, onBack }: IntroScreenProps) => {
         transition={{ delay: 0.2, type: "spring" }}
         className="text-3xl font-heading font-semibold text-foreground mb-4"
       >
-        Mirror Notes
+        {t("mirrorNotes")}
       </motion.h1>
 
       <p className="text-base text-muted-foreground leading-relaxed mb-8 max-w-sm text-justify">
-        Sometimes we notice our flaws easily but forget to acknowledge our strengths.
-        This activity invites you to leave small notes of appreciation for yourself.
+        {t("introText")}
       </p>
 
       {/* Mirror illustration */}
@@ -69,7 +70,7 @@ const IntroScreen = ({ onStart, onBack }: IntroScreenProps) => {
       </motion.div>
 
       <Button variant="mirror" size="lg" onClick={onStart} className="px-10 py-6 text-base">
-        Start Activity
+        {t("startActivity")}
       </Button>
     </motion.div>
   );
