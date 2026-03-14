@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.node.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "allowImportingTsExtensions": false,
+    "noEmit": false,
+    "rootDir": "./",
+    "outDir": "../dist-server",
+    "tsBuildInfoFile": "../node_modules/.tmp/tsconfig.server.tsbuildinfo"
+  },
+  "include": ["**/*.ts"]
+}

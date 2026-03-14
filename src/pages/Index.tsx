@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import IntroScreen from "@/components/mirror-notes/IntroScreen";
 import MirrorScreen from "@/components/mirror-notes/MirrorScreen";
@@ -14,25 +14,63 @@ const Index = () => {
   const { t } = useTranslation();
   const [screen, setScreen] = useState<Screen>("intro");
   const [notes, setNotes] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Load existing notes from the database on mount
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const userId = sessionStorage.getItem("user_id");
+        if (!userId) return;
+
+        const res = await fetch("/api/notes", {
+          headers: { "x-user-id": userId }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setNotes(data || []);
+        }
+      } catch (err) {
+        console.error("Failed to load notes:", err);
+      }
+    };
+    fetchNotes();
+  }, []);
 
   const handleAddNote = useCallback((text: string) => {
     setNotes((prev) => [...prev, text]);
   }, []);
 
-  const handleSave = useCallback(() => {
-    const existing = JSON.parse(localStorage.getItem("mirror-notes") || "[]");
-    const merged = [...new Set([...existing, ...notes])];
-    localStorage.setItem("mirror-notes", JSON.stringify(merged));
-    toast.success(t("notesSaved"));
-    setScreen("saved");
+  const handleSave = useCallback(async () => {
+    setIsSaving(true);
+    try {
+      const userId = sessionStorage.getItem("user_id");
+      if (!userId) throw new Error("No user ID");
+
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "x-user-id": userId 
+        },
+        body: JSON.stringify({ notes })
+      });
+
+      if (res.ok) {
+        toast.success(t("notesSaved"));
+        setScreen("saved");
+      } else {
+        throw new Error("Failed to save");
+      }
+    } catch (err) {
+      toast.error("Error saving notes to server");
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
   }, [notes, t]);
 
   const handleViewSaved = useCallback(() => {
-    const saved = JSON.parse(localStorage.getItem("mirror-notes") || "[]");
-    setNotes((prev) => {
-      const merged = [...new Set([...saved, ...prev])];
-      return merged;
-    });
     setScreen("saved");
   }, []);
 
@@ -41,7 +79,6 @@ const Index = () => {
   }, []);
 
   const handleBack = useCallback(() => {
-    setNotes([]);
     setScreen("intro");
   }, []);
 

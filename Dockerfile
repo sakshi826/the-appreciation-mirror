@@ -1,25 +1,32 @@
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# Install dependencies needed for both frontend & backend build
 COPY package*.json ./
 RUN npm ci
 
 COPY . .
 
+# Build the Vite frontend application
 RUN npm run build
 
-FROM nginx:alpine
+# Compile TypeScript backend
+RUN npm run build:server
 
-WORKDIR /usr/share/nginx/html
+FROM node:22-alpine AS runner
 
-# Create the subdirectory and copy build files into it
-RUN mkdir -p /usr/share/nginx/html/the-appreciation-mirror
-COPY --from=builder /app/dist /usr/share/nginx/html/the-appreciation-mirror
+WORKDIR /app
 
-RUN rm /etc/nginx/conf.d/default.conf
-COPY vite-nginx.conf /etc/nginx/conf.d/nginx.conf
+# Only copy over the production assets
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/dist-server ./server
+COPY --from=builder /app/database ./database
+COPY --from=builder /app/package*.json ./
 
-EXPOSE 80
+# Install only production dependencies
+RUN npm ci --omit=dev
 
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 8080
+
+CMD ["node", "server/index.js"]
